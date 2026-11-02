@@ -81,6 +81,7 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = [pool.submit(fetch_one, name, categories, now.date(), horizon) for name,categories in ADAPTERS.items()]
         results = [r for f in futures for r in f.result()]
+    now = datetime.now(timezone.utc).replace(microsecond=0)
     state = reconcile(results, previous, now, horizon)
     if previous is None and any(h['count'] == 0 for h in state['health'].values()):
         raise IntegrityError('Initial publication must contain verified or explicitly labelled fallback events for every category')

@@ -14,6 +14,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      calendar_sha: ${{ steps.fingerprint.outputs.calendar_sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,7 +27,7 @@ jobs:
       - name: Unit and integration tests
         run: python -m pytest -q
       - name: Fetch schedules and validate complete publication
-        run: python -m src.main --previous-url https://chetinselim.github.io/macro-index-calendar/state.json --bootstrap
+        run: python -m src.main --previous-url https://chetinselim.github.io/macro-index-calendar/state.json
       - name: Summarize source health
         if: always()
         run: |
@@ -40,6 +42,9 @@ jobs:
                   for cat,h in report['categories'].items():
                       f.write(f"| {cat} | {h['status']} | {h['count']} | {h['last_success']} |\n")
           PY
+      - name: Fingerprint validated calendar
+        id: fingerprint
+        run: echo "calendar_sha=$(sha256sum build/calendar.ics | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Upload diagnostic artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,11 +75,25 @@ jobs:
       - name: Verify public calendar
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          CALENDAR_SHA: ${{ needs.build.outputs.calendar_sha }}
         run: |
-          curl --fail --retry 5 --retry-delay 10 "$SITE_URL/calendar.ics" -o /tmp/calendar.ics
+          python -m pip install icalendar==6.3.2
           python - <<'PY'
-          from pathlib import Path
-          raw = Path('/tmp/calendar.ics').read_text()
-          assert raw.startswith('BEGIN:VCALENDAR'), 'Public URL did not return a calendar'
-          assert 'BEGIN:VEVENT' in raw, 'Public calendar is empty'
+          import hashlib, os, time
+          from urllib.request import urlopen
+          from icalendar import Calendar
+          for attempt in range(12):
+              try:
+                  raw = urlopen(os.environ['SITE_URL'].rstrip('/') + '/calendar.ics', timeout=20).read()
+                  assert hashlib.sha256(raw).hexdigest() == os.environ['CALENDAR_SHA'], 'Public calendar differs from validated artifact'
+                  events = Calendar.from_ical(raw).walk('VEVENT')
+                  assert events, 'Public calendar is empty'
+                  categories = {str(e['X-SOURCE-CATEGORY']) for e in events}
+                  assert categories == {'fomc','boe','nfp','cpi','pce','msci','sp500','russell','options'}, categories
+                  print(f'Public ICS matches validated artifact: {len(events)} events, all nine categories')
+                  break
+              except Exception:
+                  if attempt == 11:
+                      raise
+                  time.sleep(10)
           PY
