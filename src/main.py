@@ -10,13 +10,13 @@ import shutil
 import tempfile
 import yaml
 from dateutil.relativedelta import relativedelta
-from src.models import SourceResult
+from src.models import CATEGORIES, SourceResult
 from src.state import reconcile, IntegrityError
 from src.calendar import build_calendar, validate_ics
 from src.site import render_site
 from src.sources.http import get
 
-ADAPTERS = {'fomc':['fomc'], 'boe':['boe'], 'bls':['nfp','cpi'], 'bea':['pce'], 'msci':['msci'], 'sp500':['sp500'], 'russell':['russell'], 'options':['options']}
+ADAPTERS = {'fomc':['fomc'], 'boe':['boe'], 'bls':['nfp','cpi'], 'bea':['pce'], 'msci':['msci'], 'sp500':['sp500'], 'russell':['russell'], 'options':['options'], 'elections':['elections']}
 
 def fetch_one(name, categories, today, horizon):
     try:
@@ -77,12 +77,13 @@ def main():
     config = yaml.safe_load(Path('config.yaml').read_text())
     now = datetime.now(timezone.utc).replace(microsecond=0)
     horizon = now.date() + relativedelta(months=config['horizon_months'])
+    horizons = {c: now.date() + relativedelta(months=config.get('category_horizon_months', {}).get(c, config['horizon_months'])) for c in CATEGORIES}
     previous = load_previous(args.previous, args.previous_url, args.bootstrap)
     with ThreadPoolExecutor(max_workers=4) as pool:
-        futures = [pool.submit(fetch_one, name, categories, now.date(), horizon) for name,categories in ADAPTERS.items()]
+        futures = [pool.submit(fetch_one, name, categories, now.date(), max(horizons[c] for c in categories)) for name,categories in ADAPTERS.items()]
         results = [r for f in futures for r in f.result()]
     now = datetime.now(timezone.utc).replace(microsecond=0)
-    state = reconcile(results, previous, now, horizon)
+    state = reconcile(results, previous, now, horizon, category_horizons=horizons)
     if previous is None and any(h['count'] == 0 for h in state['health'].values()):
         raise IntegrityError('Initial publication must contain verified or explicitly labelled fallback events for every category')
     publish(state, args.output, config['base_url'], now)

@@ -33,10 +33,11 @@ def fingerprint(record: dict) -> str:
 def timestamp(value):
     return datetime.fromisoformat(value.replace('Z', '+00:00')) if value else datetime.min.replace(tzinfo=timezone.utc)
 
-def reconcile(results: list[SourceResult], previous: dict | None, now: datetime, horizon: date) -> dict:
+def reconcile(results: list[SourceResult], previous: dict | None, now: datetime, horizon: date, *, category_horizons: dict[str, date] | None = None) -> dict:
     today = now.date()
     previous = previous or {}
-    old = {r['uid']:r for r in previous.get('events', []) if today <= date.fromisoformat(r['start'][:10]) <= horizon}
+    horizons = {c: (category_horizons or {}).get(c, horizon) for c in CATEGORIES}
+    old = {r['uid']:r for r in previous.get('events', []) if today <= date.fromisoformat(r['start'][:10]) <= horizons.get(r['category'], horizon)}
     prior_health = previous.get('health', {})
     if len(results) != len(CATEGORIES) or set(r.category for r in results) != set(CATEGORIES):
         raise IntegrityError('Each requested category must return exactly one explicit result')
@@ -50,7 +51,7 @@ def reconcile(results: list[SourceResult], previous: dict | None, now: datetime,
             if event.category != result.category:
                 raise IntegrityError('Adapter returned an event in the wrong category')
             row = serialize(event)
-            if not today <= date.fromisoformat(row['start'][:10]) <= horizon:
+            if not today <= date.fromisoformat(row['start'][:10]) <= horizons[result.category]:
                 continue
             if row['uid'] in rows and rows[row['uid']] != row:
                 raise IntegrityError(f"Conflicting duplicate identity {event.key}")
@@ -110,4 +111,4 @@ def reconcile(results: list[SourceResult], previous: dict | None, now: datetime,
         raise IntegrityError('Refusing to publish an empty calendar')
     if old and len(records) < len(old) * .8:
         raise IntegrityError('Material event-count regression')
-    return {'schema_version':1, 'generated_at':now.isoformat(), 'horizon':horizon.isoformat(), 'events':list(records.values()), 'health':health, 'changes':(previous.get('changes',[]) + changes)[-500:]}
+    return {'schema_version':1, 'generated_at':now.isoformat(), 'horizon':horizon.isoformat(), 'category_horizons':{c:h.isoformat() for c,h in horizons.items()}, 'events':list(records.values()), 'health':health, 'changes':(previous.get('changes',[]) + changes)[-500:]}

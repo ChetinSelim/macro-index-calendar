@@ -2,8 +2,8 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
-CATEGORIES = ('fomc', 'boe', 'nfp', 'cpi', 'pce', 'msci', 'sp500', 'russell', 'options')
-LABELS = dict(zip(CATEGORIES, ('FOMC', 'Bank of England', 'US Non-Farm Payrolls', 'US CPI', 'US PCE', 'MSCI', 'S&P 500', 'Russell', 'Options expiry')))
+CATEGORIES = ('fomc', 'boe', 'nfp', 'cpi', 'pce', 'msci', 'sp500', 'russell', 'options', 'elections')
+LABELS = dict(zip(CATEGORIES, ('FOMC', 'Bank of England', 'US Non-Farm Payrolls', 'US CPI', 'US PCE', 'MSCI', 'S&P 500', 'Russell', 'Options expiry', 'US elections')))
 
 @dataclass
 class Event:

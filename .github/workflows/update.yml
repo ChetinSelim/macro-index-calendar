@@ -89,8 +89,8 @@ jobs:
                   events = Calendar.from_ical(raw).walk('VEVENT')
                   assert events, 'Public calendar is empty'
                   categories = {str(e['X-SOURCE-CATEGORY']) for e in events}
-                  assert categories == {'fomc','boe','nfp','cpi','pce','msci','sp500','russell','options'}, categories
-                  print(f'Public ICS matches validated artifact: {len(events)} events, all nine categories')
+                  assert categories == {'fomc','boe','nfp','cpi','pce','msci','sp500','russell','options','elections'}, categories
+                  print(f'Public ICS matches validated artifact: {len(events)} events, all ten categories')
                   break
               except Exception:
                   if attempt == 11:

@@ -1,6 +1,6 @@
 # Macro & Index Events
 
-A free, ad-free public iCalendar feed of macroeconomic releases and equity-index dates. Python 3.12, GitHub Actions and GitHub Pages; no API keys, database, cookies, analytics or paid infrastructure.
+A free, ad-free public iCalendar feed of macroeconomic releases, equity-index dates and US federal elections. Python 3.12, GitHub Actions and GitHub Pages; no API keys, database, cookies, analytics or paid infrastructure.
 
 - **Website:** https://chetinselim.github.io/macro-index-calendar/
 - **Subscribe:** https://chetinselim.github.io/macro-index-calendar/calendar.ics
@@ -17,7 +17,7 @@ Each event includes a `VALARM` 24 hours beforehand. Google Calendar may ignore a
 
 ## Coverage and meaning
 
-The requested horizon is the next 18 months. The generator only uses published macro dates, and does not extend a short official schedule by guessing. The requested list has **nine categories**, counting NFP and CPI separately.
+The macro/index horizon is the next 18 months. US elections use a separate rolling 48-month horizon so the next presidential election is included. The generator only uses published macro dates, and does not extend a short official schedule by guessing. There are **ten categories**, including US elections and counting NFP and CPI separately.
 
 | Category | Primary format and scope | Fallback / limitation |
 |---|---|---|
@@ -30,8 +30,9 @@ The requested horizon is the next 18 months. The generator only uses published m
 | S&P 500 | Official methodology PDFs and announcement RSS | Calculated quarterly shares/IWF maintenance, distinct from discretionary membership changes; RSS availability and narrow parsing limit ad hoc coverage |
 | Russell | Official LSEG HTML/JSON-LD and methodology PDF | June **and December** semiannual reconstitution from 2026; rank day, preliminary lists, list updates, implementation and effective sessions; future cycles labelled calculated |
 | Options expiry | OCC/OIC standard convention and Cboe holiday HTML | Calculated monthly third-Friday concentration dates, holiday-adjusted; March/June/September/December labelled triple witching (historically also called quad witching) |
+| US elections | USAGov timing rules and the FEC national general-election date | Midterms and presidential/congressional elections; all-day entries, with calculated labels where no explicit FEC date is available |
 
-See [macro source evidence](docs/macro-sources.md) and [index source evidence](docs/index-sources.md) for exact URLs, parser choices and verified limitations. Every event links its source. The landing page reports **actual upcoming event counts**, last verification, last attempt, published coverage end, date certainty and retained-event count for every category.
+See [election source evidence](docs/election-sources.md), [macro source evidence](docs/macro-sources.md) and [index source evidence](docs/index-sources.md) for exact URLs, parser choices and verified limitations. Every event links its source. The landing page reports **actual upcoming event counts**, last verification, last attempt, published coverage end, date certainty and retained-event count for every category.
 
 **Confirmed** means an official date is published. **Provisional** means a published date is explicitly tentative. **Calculated** means a date derived from a documented rule, not a separately confirmed provider announcement. Provisional and calculated labels appear in event titles as well as descriptions. A source can be healthy while its dates remain provisional.
 
@@ -76,7 +77,7 @@ The output directory contains `calendar.ics`, `index.html`, `health.json`, `chan
 3. Every requested category must return an explicit health result, including zero-coverage categories. Missing or malformed category results fail.
 4. Prior future events are retained during source outages or partial omissions. Older fallback snapshots cannot overwrite newer verified corrections, and calculated projections cannot replace confirmed dates. Retained events are identified in the ICS and health report. Their verification timestamp never advances merely because the generator ran.
 5. A source claiming success but losing more than 30% of its previous future identities blocks publication. Empty calendars and material total-count regression also fail. Investigate changed keys/layouts or verified cancellations before changing the baseline; the generator does not silently treat disappearance as cancellation.
-6. The complete ICS is round-tripped through the `icalendar` parser before any output is published. After deployment, the public feed is parsed and must match the validated artifact's SHA-256 fingerprint and contain all nine categories. Tests cover release rescheduling, source outage preservation, empty/regressed output, parser fixtures, all-day events, holiday adjustments, UK/US DST boundaries and alarms. The initial publication must contain events in all nine categories.
+6. The complete ICS is round-tripped through the `icalendar` parser before any output is published. After deployment, the public feed is parsed and must match the validated artifact's SHA-256 fingerprint and contain all ten categories. Tests cover release rescheduling, source outage preservation, empty/regressed output, parser fixtures, all-day events, holiday adjustments, UK/US DST boundaries and alarms. The initial publication must contain events in all ten categories.
 7. `changes.json` retains the latest 500 event changes. `health.json` distinguishes last verification from the last attempt. GitHub warnings and the job summary expose degraded source coverage.
 8. If the prior published state cannot be fetched or fails validation, the production update fails instead of starting from an empty baseline. Failed builds do not deploy; GitHub Pages keeps the previous site. Its visible build timestamp then becomes stale, and the Actions run is red.
 

@@ -1,4 +1,6 @@
 name: Macro & Index Events
 timezone: Europe/London
 horizon_months: 18
+category_horizon_months:
+  elections: 48
 base_url: https://chetinselim.github.io/macro-index-calendar
