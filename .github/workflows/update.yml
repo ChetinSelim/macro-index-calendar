@@ -1,0 +1,80 @@
+name: Update and deploy calendar
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.lock
+      - name: Unit and integration tests
+        run: python -m pytest -q
+      - name: Fetch schedules and validate complete publication
+        run: python -m src.main --previous-url https://chetinselim.github.io/macro-index-calendar/state.json --bootstrap
+      - name: Summarize source health
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path('build/health.json')
+          if path.exists():
+              report = json.loads(path.read_text())
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+                  f.write('## Source health\n\n| Category | Status | Events | Last verified |\n|---|---|---:|---|\n')
+                  for cat,h in report['categories'].items():
+                      f.write(f"| {cat} | {h['status']} | {h['count']} | {h['last_success']} |\n")
+          PY
+      - name: Upload diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calendar-diagnostics
+          path: |
+            build/health.json
+            build/changes.json
+          if-no-files-found: ignore
+          retention-days: 30
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify public calendar
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --retry 5 --retry-delay 10 "$SITE_URL/calendar.ics" -o /tmp/calendar.ics
+          python - <<'PY'
+          from pathlib import Path
+          raw = Path('/tmp/calendar.ics').read_text()
+          assert raw.startswith('BEGIN:VCALENDAR'), 'Public URL did not return a calendar'
+          assert 'BEGIN:VEVENT' in raw, 'Public calendar is empty'
+          PY

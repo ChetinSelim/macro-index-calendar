@@ -1,0 +1,128 @@
+{
+  "verified_at": "2026-11-02T18:32:34Z",
+  "method": "Reviewed official BLS reference-month tables through web retrieval. Direct runtime ICS and HTML returned HTTP 403. No access-control workaround.",
+  "sources": [
+    "https://www.bls.gov/schedule/news_release/empsit.htm",
+    "https://www.bls.gov/schedule/news_release/cpi.htm",
+    "https://www.bls.gov/schedule/2027/home.htm"
+  ],
+  "timezone_evidence": "Official annual calendar states: All times on calendar are Eastern Time.",
+  "releases": {
+    "nfp": [
+      {
+        "period": "2026-10",
+        "start": "2026-11-06T08:30:00-05:00"
+      },
+      {
+        "period": "2026-11",
+        "start": "2026-12-04T08:30:00-05:00"
+      },
+      {
+        "period": "2026-12",
+        "start": "2027-01-08T08:30:00-05:00"
+      },
+      {
+        "period": "2027-01",
+        "start": "2027-02-05T08:30:00-05:00"
+      },
+      {
+        "period": "2027-02",
+        "start": "2027-03-05T08:30:00-05:00"
+      },
+      {
+        "period": "2027-03",
+        "start": "2027-04-02T08:30:00-04:00"
+      },
+      {
+        "period": "2027-04",
+        "start": "2027-05-07T08:30:00-04:00"
+      },
+      {
+        "period": "2027-05",
+        "start": "2027-06-04T08:30:00-04:00"
+      },
+      {
+        "period": "2027-06",
+        "start": "2027-07-02T08:30:00-04:00"
+      },
+      {
+        "period": "2027-07",
+        "start": "2027-08-06T08:30:00-04:00"
+      },
+      {
+        "period": "2027-08",
+        "start": "2027-09-03T08:30:00-04:00"
+      },
+      {
+        "period": "2027-09",
+        "start": "2027-10-08T08:30:00-04:00"
+      },
+      {
+        "period": "2027-10",
+        "start": "2027-11-05T08:30:00-04:00"
+      },
+      {
+        "period": "2027-11",
+        "start": "2027-12-03T08:30:00-05:00"
+      }
+    ],
+    "cpi": [
+      {
+        "period": "2026-10",
+        "start": "2026-11-10T08:30:00-05:00"
+      },
+      {
+        "period": "2026-11",
+        "start": "2026-12-10T08:30:00-05:00"
+      },
+      {
+        "period": "2026-12",
+        "start": "2027-01-13T08:30:00-05:00"
+      },
+      {
+        "period": "2027-01",
+        "start": "2027-02-11T08:30:00-05:00"
+      },
+      {
+        "period": "2027-02",
+        "start": "2027-03-10T08:30:00-05:00"
+      },
+      {
+        "period": "2027-03",
+        "start": "2027-04-13T08:30:00-04:00"
+      },
+      {
+        "period": "2027-04",
+        "start": "2027-05-12T08:30:00-04:00"
+      },
+      {
+        "period": "2027-05",
+        "start": "2027-06-10T08:30:00-04:00"
+      },
+      {
+        "period": "2027-06",
+        "start": "2027-07-14T08:30:00-04:00"
+      },
+      {
+        "period": "2027-07",
+        "start": "2027-08-11T08:30:00-04:00"
+      },
+      {
+        "period": "2027-08",
+        "start": "2027-09-14T08:30:00-04:00"
+      },
+      {
+        "period": "2027-09",
+        "start": "2027-10-14T08:30:00-04:00"
+      },
+      {
+        "period": "2027-10",
+        "start": "2027-11-10T08:30:00-05:00"
+      },
+      {
+        "period": "2027-11",
+        "start": "2027-12-10T08:30:00-05:00"
+      }
+    ]
+  }
+}

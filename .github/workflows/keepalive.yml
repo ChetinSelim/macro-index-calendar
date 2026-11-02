@@ -1,0 +1,22 @@
+name: Keep scheduled updates active
+on:
+  schedule:
+    - cron: '41 7 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: calendar-keepalive
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Record repository activity before GitHub's 60-day cutoff
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit --allow-empty -m 'Keep daily calendar automation active'
+          git push origin HEAD:main

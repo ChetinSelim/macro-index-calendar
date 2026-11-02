@@ -1,0 +1,86 @@
+{
+  "observed_at": "2026-11-02T18:37:05.690642+00:00",
+  "today": "2026-11-02",
+  "horizon": "2028-05-02",
+  "sources": [
+    {
+      "category": "msci",
+      "status": "ok",
+      "events": 18,
+      "confirmed": 12,
+      "calculated": 6,
+      "notes": [
+        "Announcement/effective dates are official; implementation windows are calculated and require local-market confirmation."
+      ],
+      "source_urls": [
+        "https://www.msci.com/eqb/pressreleases/archive/ir_dates.csv",
+        "https://www.msci.com/eqb/fm/index_review.html"
+      ],
+      "verified_at": null,
+      "first": "2026-11-11",
+      "last": "2028-03-01"
+    },
+    {
+      "category": "sp500",
+      "status": "partial",
+      "events": 12,
+      "confirmed": 0,
+      "calculated": 12,
+      "notes": [
+        "Quarterly share/IWF maintenance dates are calculated. S&P 500 membership additions/deletions have no scheduled reconstitution and no future announcement dates are invented.",
+        "Ad hoc membership coverage is limited to accessible RSS stories naming S&P 500 in the title and giving one unambiguous explicit effective date; other notices require manual review.",
+        "Live S&P methodology unavailable (HTTPError: 403 Client Error: Forbidden for url: https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-equity-indices-policies-practices.pdf). Using the rule reviewed via official PDF on 2026-11-02T18:35:00+00:00; degraded fallback, not a fresh schedule.",
+        "Live membership RSS unavailable (HTTPError: 403 Client Error: Forbidden for url: https://www.spglobal.com/spdji/en/rss/rss-details/?rssFeedName=index-news-announcements); ad hoc membership announcements are not currently verified."
+      ],
+      "source_urls": [
+        "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-equity-indices-policies-practices.pdf",
+        "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf",
+        "https://www.spglobal.com/spdji/en/index-announcements/",
+        "https://www.spglobal.com/spdji/en/rss/rss-details/?rssFeedName=index-news-announcements"
+      ],
+      "verified_at": "2026-11-02T18:35:00+00:00",
+      "first": "2026-12-18",
+      "last": "2028-03-20"
+    },
+    {
+      "category": "russell",
+      "status": "partial",
+      "events": 16,
+      "confirmed": 6,
+      "calculated": 10,
+      "notes": [
+        "June and December semiannual reconstitution from 2026; older notices mentioning November are superseded.",
+        "Specific live announced phases are confirmed; future cycles and effective-session dates are calculated from the methodology.",
+        "Official current-cycle structured FAQ retrieved live.",
+        "Official methodology Appendix F retrieved live. Future dates repeat its rules until a newer notice changes them; they are not confirmed schedules."
+      ],
+      "source_urls": [
+        "https://www.lseg.com/en/ftse-russell/russell-reconstitution",
+        "https://www.lseg.com/content/dam/ftse-russell/en_us/documents/ground-rules/russell-us-indexes-construction-and-methodology.pdf"
+      ],
+      "verified_at": "2026-11-02T18:37:05.297230+00:00",
+      "first": "2026-11-13",
+      "last": "2028-04-28"
+    },
+    {
+      "category": "options",
+      "status": "partial",
+      "events": 18,
+      "confirmed": 0,
+      "calculated": 18,
+      "notes": [
+        "Calculated market markers, not confirmed contract-specific expirations or settlement times.",
+        "Official OIC convention and Cboe holiday tables retrieved live; dates remain rule calculations.",
+        "Cboe full-year holiday coverage not parsed for [2028]; those dates use XNYS rules and may change."
+      ],
+      "source_urls": [
+        "https://www.optionseducation.org/optionsoverview/options-basics",
+        "https://www.optionseducation.org/referencelibrary/expiration-calendar",
+        "https://www.cboe.com/about/hours/us-options"
+      ],
+      "verified_at": "2026-11-02T18:37:05.690471+00:00",
+      "first": "2026-11-20",
+      "last": "2028-04-21"
+    }
+  ]
+}
